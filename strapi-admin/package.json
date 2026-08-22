@@ -1,18 +1,11 @@
 {
-  "name": "@punch-in/strapi-admin",
-  "version": "1.0.1",
-  "description": "Strapi Admin",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/lordvee/strapi-admin.git"
+  "author": {
+    "name": "Strapi"
   },
-  "scripts": {
-    "test": "echo \"no tests yet\"",
-    "develop": "webpack-dev-server --config webpack.config.dev.js",
-    "develop:ce": "STRAPI_DISABLE_EE=true webpack-dev-server --config webpack.config.dev.js",
-    "analyze:bundle": "ANALYZE_BUNDLE=true webpack --config webpack.config.dev.js"
+  "bugs": {
+    "url": "https://github.com/strapi/strapi/issues"
   },
-  "main": "index.js",
+  "bundleDependencies": false,
   "dependencies": {
     "@babel/core": "^7.14.0",
     "@babel/plugin-proposal-async-generator-functions": "^7.13.15",
@@ -24,12 +17,12 @@
     "@babel/preset-env": "^7.13.15",
     "@babel/preset-react": "^7.13.13",
     "@babel/runtime": "^7.13.17",
-    "@buffetjs/core": "3.3.8",
-    "@buffetjs/custom": "3.3.8",
-    "@buffetjs/hooks": "3.3.8",
-    "@buffetjs/icons": "3.3.8",
-    "@buffetjs/styles": "3.3.8",
-    "@buffetjs/utils": "3.3.8",
+    "@punch-in/buffet-modern-core": "^3.3.8",
+    "@punch-in/buffet-modern-custom": "^3.3.8",
+    "@punch-in/buffet-modern-hooks": "^3.3.8",
+    "@punch-in/buffet-modern-icons": "^3.3.8",
+    "@punch-in/buffet-modern-styles": "^3.3.8",
+    "@punch-in/buffet-modern-utils": "^3.3.8",
     "@casl/ability": "^4.1.5",
     "@fingerprintjs/fingerprintjs": "3.1.1",
     "@fortawesome/fontawesome-free": "^5.15.3",
@@ -37,6 +30,7 @@
     "@fortawesome/free-brands-svg-icons": "^5.15.3",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
+    "@punch-in/strapi": "^1.0.5",
     "autoprefixer": "^9.8.6",
     "axios": "^0.21.1",
     "babel-loader": "^8.1.0",
@@ -114,24 +108,36 @@
     "webpackbar": "^4.0.0",
     "yup": "^0.32.9"
   },
-  "author": "Strapi",
-  "maintainers": [
-    "Strapi"
-  ],
+  "description": "Punch-in Admin",
+  "devDependencies": {
+    "webpack-bundle-analyzer": "4.4.0"
+  },
+  "directories": {
+    "doc": "doc",
+    "test": "tests"
+  },
   "engines": {
     "node": ">=10.16.0 <=14.x.x",
     "npm": ">=6.0.0"
   },
-  "license": "SEE LICENSE IN LICENSE",
-  "devDependencies": {
-    "webpack-bundle-analyzer": "4.4.0"
-  },
-  "bugs": {
-    "url": "https://github.com/strapi/strapi/issues"
-  },
   "homepage": "https://github.com/strapi/strapi#readme",
-  "directories": {
-    "doc": "doc",
-    "test": "tests"
-  }
+  "license": "SEE LICENSE IN LICENSE",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "Strapi"
+    }
+  ],
+  "name": "@punch-in/strapi-admin",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/lordvee/strapi-admin.git"
+  },
+  "scripts": {
+    "analyze:bundle": "ANALYZE_BUNDLE=true webpack --config webpack.config.dev.js",
+    "develop": "webpack-dev-server --config webpack.config.dev.js",
+    "develop:ce": "STRAPI_DISABLE_EE=true webpack-dev-server --config webpack.config.dev.js",
+    "test": "echo \"no tests yet\""
+  },
+  "version": "1.2.3"
 }
