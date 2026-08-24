@@ -2,6 +2,18 @@
 
 const passport = require('koa-passport');
 const compose = require('koa-compose');
+const crypto = require('crypto');
+const axios = require('axios');
+const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
+
+// Tenant Lambdas run inside a VPC with no internet route (required for the
+// EFS mount - see CLAUDE.md). Reaching the central stripe-charge Lambda
+// therefore goes through the VPC Interface Endpoint for the Lambda service
+// (infra/shared-networking-stack.yaml) via a direct SDK invoke, not HTTPS.
+// See features/API-REDESIGN.md Phase 1. The SDK v3 client-lambda package is
+// preinstalled by the Node.js 18+ Lambda managed runtime, so it does not
+// need to be bundled in strapi-lambda-layer.
+const lambdaClient = new LambdaClient({});
 
 const {
   validateRegistrationInput,
@@ -178,4 +190,129 @@ module.exports = {
       },
     };
   },
+
+  // Admin SSO now goes through the central Lambda (api.punch-in.co.uk),
+  // registered once per provider instead of once per tenant - see
+  // stripe-charge/strapi-charge/{sso.js,controllers/ssoController.js}.
+  // This instance's only remaining jobs are: (1) tell the login page which
+  // provider buttons to show, (2) hand the browser off with its own
+  // subdomain attached, (3) later, verify a provider-confirmed email
+  // against *this* tenant's admin_users - never creating one.
+
+  async ssoProviders(ctx) {
+    // SSO_PROVIDERS_MODE=invoke is the new path (see features/API-REDESIGN.md
+    // Phase 1); anything else keeps the old HTTPS call so this can be rolled
+    // back per-tenant without a redeploy while the invoke path is verified.
+    if (process.env.SSO_PROVIDERS_MODE === 'invoke') {
+      ctx.body = await fetchSsoProvidersViaInvoke();
+      return;
+    }
+
+    try {
+      const { data } = await axios.get(`${getCentralApiBase()}/sso/auth/providers`, {
+        timeout: 5000,
+      });
+      ctx.body = data;
+    } catch (err) {
+      strapi.log.error(`Failed to fetch SSO providers: ${err.message}`);
+      ctx.body = [];
+    }
+  },
+
+  async ssoConnect(ctx) {
+    const { provider: providerUid } = ctx.params;
+    const subdomain = process.env.SUBDOMAIN;
+
+    if (!subdomain) {
+      return ctx.badRequest('SUBDOMAIN is not configured on this Strapi instance');
+    }
+
+    const url = new URL(`${getCentralApiBase()}/sso/auth/${providerUid}`);
+    url.searchParams.set('subdomain', subdomain);
+
+    ctx.redirect(url.toString());
+  },
+
+  // POST /admin/sso/verify - called server-to-server by the central Lambda
+  // once it has a provider-verified email, authenticated the same way
+  // api/provider-connections' callback already is (X-Sync-Secret, constant-
+  // time compare). Read-only: an unmatched or inactive email is rejected,
+  // never used to create or activate an admin account.
+  async ssoVerify(ctx) {
+    // TEMPORARY diagnostic - ssoVerify is returning a bare 403 "Forbidden"
+    // (matching isAuthenticatedAdmin's unmessaged strapi.errors.forbidden())
+    // in production on every tenant tested, even with a correct X-Sync-Secret,
+    // despite this route's routes.json entry having no policies that could
+    // produce that. This line proves whether the request even reaches this
+    // controller at all - remove once root-caused.
+    console.log('[ssoVerify] reached controller, headers:', JSON.stringify(ctx.request.header));
+
+    const expected = process.env.SYNC_SECRET;
+    if (!expected) {
+      return ctx.internalServerError('SYNC_SECRET is not configured on this Strapi instance');
+    }
+
+    const provided = ctx.request.header['x-sync-secret'];
+    if (!secretsMatch(provided, expected)) {
+      return ctx.forbidden('Invalid sync secret');
+    }
+
+    const { email, provider } = ctx.request.body || {};
+    const user = await strapi.admin.services.auth.findActiveAdminByVerifiedEmail(email);
+
+    if (!user) {
+      strapi.eventHub.emit('admin.auth.error', {
+        error: new Error('No matching active admin account for SSO email'),
+        provider: provider || 'sso',
+      });
+      return ctx.notFound('No matching active admin account');
+    }
+
+    strapi.eventHub.emit('admin.auth.success', { user, provider: provider || 'sso' });
+
+    ctx.body = { token: strapi.admin.services.token.createJwtToken(user) };
+  },
 };
+
+function getCentralApiBase() {
+  return (process.env.PUNCHIN_INTEGRATIONS_API_BASE || 'https://api.punch-in.co.uk').replace(/\/$/, '');
+}
+
+// SsoProvidersFunction (stripe-charge/template.yaml) is also wired behind
+// API Gateway via sso.js, so its handler returns an API-Gateway-proxy-shaped
+// object ({ statusCode, headers, body: JSON.stringify(...) }) rather than
+// the raw provider array - that shape is unchanged whether API Gateway or a
+// direct InvokeCommand calls it, so it has to be unwrapped here.
+async function fetchSsoProvidersViaInvoke() {
+  const functionName = process.env.SSO_PROVIDERS_FUNCTION_NAME;
+  if (!functionName) {
+    strapi.log.error('SSO_PROVIDERS_FUNCTION_NAME is not configured');
+    return [];
+  }
+
+  try {
+    const response = await lambdaClient.send(
+      new InvokeCommand({
+        FunctionName: functionName,
+        InvocationType: 'RequestResponse',
+      })
+    );
+
+    if (response.FunctionError) {
+      throw new Error(`SsoProvidersFunction returned ${response.FunctionError}`);
+    }
+
+    const gatewayResponse = JSON.parse(Buffer.from(response.Payload).toString('utf8'));
+    return JSON.parse(gatewayResponse.body);
+  } catch (err) {
+    strapi.log.error(`Failed to invoke SsoProvidersFunction: ${err.message}`);
+    return [];
+  }
+}
+
+function secretsMatch(provided, expected) {
+  if (!provided || !expected) return false;
+  const a = Buffer.from(provided);
+  const b = Buffer.from(expected);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
