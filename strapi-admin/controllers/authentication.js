@@ -239,14 +239,6 @@ module.exports = {
   // time compare). Read-only: an unmatched or inactive email is rejected,
   // never used to create or activate an admin account.
   async ssoVerify(ctx) {
-    // TEMPORARY diagnostic - ssoVerify is returning a bare 403 "Forbidden"
-    // (matching isAuthenticatedAdmin's unmessaged strapi.errors.forbidden())
-    // in production on every tenant tested, even with a correct X-Sync-Secret,
-    // despite this route's routes.json entry having no policies that could
-    // produce that. This line proves whether the request even reaches this
-    // controller at all - remove once root-caused.
-    console.log('[ssoVerify] reached controller, headers:', JSON.stringify(ctx.request.header));
-
     const expected = process.env.SYNC_SECRET;
     if (!expected) {
       return ctx.internalServerError('SYNC_SECRET is not configured on this Strapi instance');
