@@ -2,12 +2,13 @@ import styled from 'styled-components';
 
 const Wrapper = styled.div`
   margin: auto;
-  width: 41.6rem;
-  padding: 20px 30px 25px 30px;
-  border-radius: ${({ theme }) => theme.main.sizes.borderRadius};
-  border-top: 2px solid ${({ theme }) => theme.main.colors.mediumBlue};
-  background-color: ${({ theme }) => theme.main.colors.white};
-  box-shadow: 0 2px 4px 0 ${({ theme }) => theme.main.colors.darkGrey};
-`;
+  width: 54rem;
+  padding: 20px 80px 25px;
+  border-radius: 25px;
+  box-shadow: rgb(221, 221, 221) 12px 12px 9px 0px;
+  background-color: #007eff1f;
+  border: 1px solid #dedede;
+  margin-top: 4.2em;
+`
 
 export default Wrapper;

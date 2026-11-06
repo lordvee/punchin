@@ -8,7 +8,7 @@ const WebpackDevServer = require('webpack-dev-server');
 const chalk = require('chalk');
 const chokidar = require('chokidar');
 // eslint-disable-next-line node/no-extraneous-require
-const hasEE = require('strapi/lib/utils/ee');
+const hasEE = require('@punch-in/strapi/lib/utils/ee');
 const getWebpackConfig = require('./webpack.config.js');
 
 const getPkgPath = name => path.dirname(require.resolve(`${name}/package.json`));
@@ -39,7 +39,7 @@ function getCustomWebpackConfig(dir, config) {
 async function build({ dir, env, options, optimize }) {
   // Create the cache dir containing the front-end files.
   await createCacheDir(dir);
-
+  console.log('build env: ' + env);
   const cacheDir = path.resolve(dir, '.cache');
   const entry = path.resolve(cacheDir, 'admin', 'src', 'app.js');
   const dest = path.resolve(dir, 'build');
@@ -80,6 +80,9 @@ async function build({ dir, env, options, optimize }) {
 }
 
 async function createPluginsJs(plugins, localPlugins, dest) {
+  // console.log(plugins);
+  // console.log('============');
+  // console.log(localPlugins);
   const content = `
 const injectReducer = require('./utils/injectReducer').default;
 const injectSaga = require('./utils/injectSaga').default;
@@ -89,7 +92,7 @@ const { languages } = require('./i18n');
 
 window.strapi = Object.assign(window.strapi || {}, {
   node: MODE || 'host',
-  backendURL: BACKEND_URL === '/' ? window.location.origin : BACKEND_URL,
+  backendURL: BACKEND_URL === '/' ? window.location.host.replace('-admin','') : BACKEND_URL,
   languages,
   currentLanguage:
   window.localStorage.getItem('strapi-admin-language') ||
@@ -105,8 +108,8 @@ window.strapi = Object.assign(window.strapi || {}, {
 module.exports = {
   ${plugins
     .map(name => {
-      const shortName = name.replace(/^strapi-plugin-/i, '');
-      const req = `require('../../plugins/${name}/admin/src').default`;
+      const shortName = name.replace(/^(strapi-plugin-|@punch-in\/strapi-plugin-)/i, '');
+      const req = `require('../../plugins/${name.replace('@punch-in/','')}/admin/src').default`;
       return `'${shortName}': ${req},`;
     })
     .join('\n')}
@@ -124,6 +127,7 @@ module.exports = {
 }
 
 async function clean({ dir }) {
+  console.log(`Cleaning up first...`)
   const buildDir = path.join(dir, 'build');
   const cacheDir = path.join(dir, '.cache');
 
@@ -135,7 +139,7 @@ async function copyPlugin(name, dest) {
   const pkgFilePath = getPkgPath(name);
 
   const resolveDepPath = (...args) => path.resolve(pkgFilePath, ...args);
-  const resolveDest = (...args) => path.resolve(dest, 'plugins', name, ...args);
+  const resolveDest = (...args) => path.resolve(dest, 'plugins', name.replace('@punch-in/',''), ...args);
 
   const copy = (...args) => {
     return fs.copy(resolveDepPath(...args), resolveDest(...args));
@@ -154,7 +158,7 @@ async function copyPlugin(name, dest) {
 }
 
 async function copyAdmin(dest) {
-  const adminPath = getPkgPath('strapi-admin');
+  const adminPath = getPkgPath('@punch-in/strapi-admin');
 
   // TODO copy ee folders for plugins
   await fs.copy(path.resolve(adminPath, 'ee', 'admin'), path.resolve(dest, 'ee', 'admin'));
@@ -181,7 +185,7 @@ async function createCacheDir(dir) {
 
   const pluginsToCopy = Object.keys(pkgJSON.dependencies).filter(
     dep =>
-      dep.startsWith('strapi-plugin') &&
+      dep.includes('strapi-plugin') &&
       fs.existsSync(path.resolve(getPkgPath(dep), 'admin', 'src', 'index.js'))
   );
 

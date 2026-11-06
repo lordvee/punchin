@@ -1,16 +1,16 @@
 {
-  "name": "strapi",
-  "version": "3.6.8",
-  "description": "An open source headless CMS solution to create and manage your own API. It provides a powerful dashboard and features to make your life easier. Databases supported: MongoDB, MySQL, MariaDB, PostgreSQL, SQLite",
-  "homepage": "https://strapi.io",
-  "directories": {
-    "lib": "./lib",
-    "bin": "./bin"
+  "author": {
+    "name": "Strapi team",
+    "email": "hi@strapi.io",
+    "url": "https://strapi.io"
   },
-  "main": "./lib",
   "bin": {
-    "strapi": "./bin/strapi.js"
+    "strapi": "bin/strapi.js"
   },
+  "bugs": {
+    "url": "https://github.com/lordvee/strapi/issues"
+  },
+  "bundleDependencies": false,
   "dependencies": {
     "@koa/cors": "^3.0.0",
     "async": "^2.1.2",
@@ -66,33 +66,17 @@
     "strapi-generate-service": "3.6.8",
     "strapi-utils": "3.6.8"
   },
-  "scripts": {
-    "postinstall": "node lib/utils/success.js"
-  },
-  "author": {
-    "email": "hi@strapi.io",
-    "name": "Strapi team",
-    "url": "https://strapi.io"
-  },
-  "maintainers": [
-    {
-      "name": "Strapi team",
-      "email": "hi@strapi.io",
-      "url": "https://strapi.io"
-    }
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/strapi/strapi.git"
-  },
-  "bugs": {
-    "url": "https://github.com/strapi/strapi/issues"
+  "description": "An open source headless CMS solution to create and manage your own API. It provides a powerful dashboard and features to make your life easier. Databases supported: MongoDB, MySQL, MariaDB, PostgreSQL, SQLite",
+  "devDependencies": {},
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
   },
   "engines": {
     "node": ">=10.16.0 <=14.x.x",
     "npm": ">=6.0.0"
   },
-  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://www.punch-in.co.uk",
   "keywords": [
     "strapi",
     "cms",
@@ -136,5 +120,22 @@
     "react",
     "reactjs"
   ],
-  "gitHead": "231263a3535658bab1e9492c6aaaed8692d62a53"
+  "license": "SEE LICENSE IN LICENSE",
+  "main": "./lib",
+  "maintainers": [
+    {
+      "name": "Strapi team",
+      "email": "hi@strapi.io",
+      "url": "https://strapi.io"
+    }
+  ],
+  "name": "@punch-in/strapi",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/lordvee/strapi.git"
+  },
+  "scripts": {
+    "postinstall": "node lib/utils/success.js"
+  },
+  "version": "1.0.8"
 }

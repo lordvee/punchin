@@ -13,51 +13,36 @@ import { useModels } from '../../hooks';
 
 import useFetch from './hooks';
 import { ALink, Block, Container, LinkWrapper, P, Wave, Separator } from './components';
-import BlogPost from './BlogPost';
 import SocialLink from './SocialLink';
+import PunchInToday from './PunchInToday';
+import RollCall from './RollCall';
 
 const FIRST_BLOCK_LINKS = [
   {
     link:
-      'https://strapi.io/documentation/developer-docs/latest/getting-started/quick-start.html#_4-create-a-category-content-type',
+      'https://www.punch-in.co.uk/#docs',
     contentId: 'app.components.BlockLink.documentation.content',
     titleId: 'app.components.BlockLink.documentation',
   },
   {
-    link: 'https://github.com/strapi/foodadvisor',
-    contentId: 'app.components.BlockLink.code.content',
-    titleId: 'app.components.BlockLink.code',
+    link: 'https://www.punch-in.co.uk/faq',
+    contentId: 'app.components.BlockLink.faq.content',
+    titleId: 'app.components.BlockLink.faq',
   },
 ];
 
 const SOCIAL_LINKS = [
   {
-    name: 'GitHub',
-    link: 'https://github.com/strapi/strapi/',
+    name: 'LinkedIn',
+    link: 'https://www.linkedin.com/company/punch-in-uk/',
   },
   {
-    name: 'Discord',
-    link: 'https://discord.strapi.io/',
-  },
-  {
-    name: 'Reddit',
-    link: 'https://www.reddit.com/r/Strapi/',
-  },
-  {
-    name: 'Twitter',
-    link: 'https://twitter.com/strapijs',
-  },
-  {
-    name: 'Blog',
-    link: 'https://strapi.io/blog',
-  },
-  {
-    name: 'Forum',
-    link: 'https://forum.strapi.io',
+    name: 'Facebook',
+    link: 'https://www.facebook.com/punch.in.uk',
   },
   {
     name: 'Careers',
-    link: 'https://strapi.io/careers',
+    link: 'https://www.punch-in.co.uk/careers',
   },
 ];
 
@@ -90,15 +75,7 @@ const HomePage = ({ history: { push } }) => {
     ? 'HomePage.greetings'
     : 'app.components.HomePage.welcome';
   const username = get(auth.getUserInfo(), 'firstname', '');
-  const linkProps = hasAlreadyCreatedContentTypes
-    ? {
-        id: 'app.components.HomePage.button.blog',
-        href: 'https://strapi.io/blog/',
-        onClick: () => {},
-        type: 'blog',
-        target: '_blank',
-      }
-    : {
+  const linkProps = {
         id: 'app.components.HomePage.create',
         href: '',
         onClick: handleClick,
@@ -111,6 +88,12 @@ const HomePage = ({ history: { push } }) => {
         {title => <PageTitle title={title} />}
       </FormattedMessage>
       <Container className="container-fluid">
+        <div className="row">
+          <div className="col-12">
+            <RollCall />
+            <PunchInToday />
+          </div>
+        </div>
         <div className="row">
           <div className="col-lg-8 col-md-12">
             <Block>
@@ -152,30 +135,6 @@ const HomePage = ({ history: { push } }) => {
                   }}
                 </FormattedMessage>
               )}
-              {hasAlreadyCreatedContentTypes && (
-                <div style={{ marginTop: isLoading ? 60 : 50 }}>
-                  {posts.map((post, index) => (
-                    <BlogPost
-                      {...post}
-                      key={post.link}
-                      isFirst={index === 0}
-                      isLoading={isLoading}
-                      error={error}
-                    />
-                  ))}
-                </div>
-              )}
-              <FormattedMessage id={linkProps.id}>
-                {msg => (
-                  <ALink
-                    rel="noopener noreferrer"
-                    {...linkProps}
-                    style={{ verticalAlign: ' bottom', marginBottom: 5 }}
-                  >
-                    {msg}
-                  </ALink>
-                )}
-              </FormattedMessage>
               <Separator style={{ marginTop: 37, marginBottom: 36 }} />
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 {FIRST_BLOCK_LINKS.map((data, index) => {
@@ -201,17 +160,6 @@ const HomePage = ({ history: { push } }) => {
               <FormattedMessage id="HomePage.community">{msg => <h2>{msg}</h2>}</FormattedMessage>
               <FormattedMessage id="app.components.HomePage.community.content">
                 {content => <P style={{ marginTop: 7, marginBottom: 0 }}>{content}</P>}
-              </FormattedMessage>
-              <FormattedMessage id="HomePage.roadmap">
-                {msg => (
-                  <ALink
-                    rel="noopener noreferrer"
-                    href="https://portal.productboard.com/strapi/1-public-roadmap/tabs/2-under-consideration"
-                    target="_blank"
-                  >
-                    {msg}
-                  </ALink>
-                )}
               </FormattedMessage>
 
               <Separator style={{ marginTop: 18 }} />

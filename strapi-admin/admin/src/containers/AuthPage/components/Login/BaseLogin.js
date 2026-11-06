@@ -1,19 +1,58 @@
-import React from 'react';
-import { Checkbox } from '@buffetjs/core';
+import React, { useReducer, useEffect } from 'react';
+import { Checkbox, Button, Flex } from '@punch-in/buffet-modern-core';
+import { LoadingIndicator } from '@punch-in/buffet-modern-styles';
 import { useIntl } from 'react-intl';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import { BaselineAlignment } from 'strapi-helper-plugin';
+import { BaselineAlignment, request } from 'strapi-helper-plugin';
 
-import Button from '../../../../components/FullWidthButton';
+import FullWidthButton from '../../../../components/FullWidthButton';
 import AuthLink from '../AuthLink';
 import Box from '../Box';
 import Input from '../Input';
 import Logo from '../Logo';
 import Section from '../Section';
+import ProviderButton from '../../../../components/ProviderButton';
+
+// Provider fetching hook
+const useAuthProviders = () => {
+  const [state, dispatch] = useReducer((state, action) => {
+    switch (action.type) {
+      case 'GET_DATA':
+        return { ...state, isLoading: true };
+      case 'GET_DATA_SUCCEEDED':
+        return { ...state, data: action.data, isLoading: false };
+      case 'GET_DATA_ERROR':
+        return { ...state, isLoading: false };
+      default:
+        return state;
+    }
+  }, { data: [], isLoading: true });
+
+  useEffect(() => {
+    const fetchAuthProviders = async () => {
+      try {
+        const data = await request('/admin/providers', { method: 'GET' });
+        dispatch({ type: 'GET_DATA_SUCCEEDED', data });
+      } catch (err) {
+        console.error(err);
+        dispatch({ type: 'GET_DATA_ERROR' });
+        strapi.notification.toggle({
+          type: 'warning',
+          message: { id: 'notification.error' },
+          centered: true,
+        });
+      }
+    };
+    fetchAuthProviders();
+  }, []);
+
+  return state;
+};
 
 const Login = ({ children, formErrors, modifiedData, onChange, onSubmit, requestError }) => {
   const { formatMessage } = useIntl();
+  const { isLoading, data: providers } = useAuthProviders();
 
   return (
     <>
@@ -23,6 +62,7 @@ const Login = ({ children, formErrors, modifiedData, onChange, onSubmit, request
       <Section withBackground>
         <BaselineAlignment top size="25px">
           <Box errorMessage={get(requestError, 'errorMessage', null)}>
+            {/* Regular Login Form */}
             <form onSubmit={onSubmit}>
               <Input
                 autoFocus
@@ -52,16 +92,40 @@ const Login = ({ children, formErrors, modifiedData, onChange, onSubmit, request
                 value={modifiedData.rememberMe}
               />
               <BaselineAlignment top size="27px">
-                <Button type="submit" color="primary" textTransform="uppercase">
+                <FullWidthButton type="submit" color="primary" textTransform="uppercase">
                   {formatMessage({ id: 'Auth.form.button.login' })}
-                </Button>
+                </FullWidthButton>
               </BaselineAlignment>
             </form>
             {children}
           </Box>
         </BaselineAlignment>
       </Section>
+      {/* Forgot password link, directly below the login form */}
       <AuthLink label="Auth.link.forgot-password" to="/auth/forgot-password" />
+      {/* SSO Providers Section - pinned to the bottom of the viewport */}
+      {!isLoading && providers.length > 0 && (
+        <div
+          style={{
+            position: 'fixed',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: '#d2e9fe',
+            padding: '1.4rem',
+            boxShadow: 'rgb(221, 221, 221) 0px -6px 9px 0px',
+          }}
+        >
+          <Flex flexWrap="wrap" justifyContent="center" alignItems="center">
+            <div>{formatMessage({ id: 'Auth.components.sso.info' })}: </div>
+            {providers.map(provider => (
+              <div key={provider.uid} style={{ padding: '5px 4px' }}>
+                <ProviderButton provider={provider} />
+              </div>
+            ))}
+          </Flex>
+        </div>
+      )}
     </>
   );
 };

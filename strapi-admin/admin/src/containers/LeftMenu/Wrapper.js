@@ -8,13 +8,12 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 const Wrapper = styled.div`
-  position: fixed;
-  float: left;
-  top: 0;
-  left: 0;
   height: 100vh;
-  width: ${props => props.theme.main.sizes.leftMenu.width};
-  background: ${props => props.theme.main.colors.strapi['blue-darker']};
+  width: 6rem;
+  top: 60px;
+  position: fixed;
+  z-index: 10;
+  background: ${props => props.theme.main.colors.strapi['light-blue-transparent']};
 
   /* scrollbar overrides */
   * {

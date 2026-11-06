@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom';
 import {
   LeftMenuLinksSection,
   LeftMenuFooter,
-  LeftMenuHeader,
   LinksContainer,
 } from '../../components/LeftMenu';
 import Loader from './Loader';
@@ -45,8 +44,17 @@ const LeftMenu = ({ shouldUpdateStrapi, version, plugins, setUpdateMenu }) => {
   return (
     <Wrapper>
       <Loader show={isLoading} />
-      <LeftMenuHeader />
       <LinksContainer>
+        {pluginsSectionLinks.length > 0 && (
+          <LeftMenuLinksSection
+            section="plugins"
+            name="plugins"
+            links={pluginsSectionLinks}
+            location={location}
+            searchable={false}
+            emptyLinksListMessage="app.components.LeftMenuLinkContainer.noPluginsInstalled"
+          />
+        )}
         {filteredCollectionTypeLinks.length > 0 && (
           <LeftMenuLinksSection
             section="collectionType"
@@ -66,16 +74,6 @@ const LeftMenu = ({ shouldUpdateStrapi, version, plugins, setUpdateMenu }) => {
           />
         )}
 
-        {pluginsSectionLinks.length > 0 && (
-          <LeftMenuLinksSection
-            section="plugins"
-            name="plugins"
-            links={pluginsSectionLinks}
-            location={location}
-            searchable={false}
-            emptyLinksListMessage="app.components.LeftMenuLinkContainer.noPluginsInstalled"
-          />
-        )}
         {generalSectionLinks.length > 0 && (
           <LeftMenuLinksSection
             section="general"
@@ -86,7 +84,6 @@ const LeftMenu = ({ shouldUpdateStrapi, version, plugins, setUpdateMenu }) => {
           />
         )}
       </LinksContainer>
-      <LeftMenuFooter key="footer" version={version} />
     </Wrapper>
   );
 };

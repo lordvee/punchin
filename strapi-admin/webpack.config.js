@@ -56,15 +56,15 @@ module.exports = ({
   return {
     mode: isProduction ? 'production' : 'development',
     bail: isProduction ? true : false,
-    devtool: isProduction ? false : 'cheap-module-source-map',
+    devtool: isProduction ? false : 'source-map',
     entry,
     output: {
       path: dest,
       publicPath: options.publicPath,
       // Utilize long-term caching by adding content hashes (not compilation hashes)
       // to compiled assets for production
-      filename: isProduction ? '[name].[contenthash:8].js' : 'bundle.js',
-      chunkFilename: isProduction ? '[name].[contenthash:8].chunk.js' : '[name].chunk.js',
+      filename: '[name].[contenthash:8].js',
+      chunkFilename: '[name].[contenthash:8].chunk.js',
     },
     optimization: {
       minimize: optimize,
@@ -93,7 +93,7 @@ module.exports = ({
           parallel: !isWsl,
           // Enable file caching
           cache: true,
-          sourceMap: false,
+          sourceMap: isProduction ? false : true,
         }),
       ],
       runtimeChunk: true,
@@ -149,7 +149,7 @@ module.exports = ({
           use: 'file-loader',
         },
         {
-          test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.ico$/],
+          test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.ico$/, /\.webp$/],
           loader: require.resolve('url-loader'),
           options: {
             limit: 1000,

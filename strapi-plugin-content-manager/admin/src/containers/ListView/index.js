@@ -5,8 +5,8 @@ import { bindActionCreators, compose } from 'redux';
 import { get, isEmpty } from 'lodash';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Header } from '@buffetjs/custom';
-import { Flex, Padded } from '@buffetjs/core';
+import Header from '../../components/Header';
+import { Flex, Padded } from '@punch-in/buffet-modern-core';
 import isEqual from 'react-fast-compare';
 import { stringify } from 'qs';
 import {
@@ -101,6 +101,7 @@ function ListView({
 
   const [isFilterPickerOpen, setFilterPickerState] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
+  const [allData, setAllData] = useState([]);
   const contentType = layout.contentType;
   const hasDraftAndPublish = get(contentType, 'options.draftAndPublish', false);
   const allAllowedHeaders = useMemo(() => getAllAllowedHeaders(attributes), [attributes]);
@@ -244,22 +245,32 @@ function ListView({
     onDeleteDataError,
   ]);
 
+  const getAllData = useCallback( async () => {
+    const requestUrl = `/${pluginId}/collection-types/${slug}?page=1&pageSize=-1&_sort=id:ASC`;
+    try {
+      const { results } = await request(requestUrl, { method: 'GET' });
+      setAllData(results)
+    } catch (err) {
+      console.log(err);
+    }
+}, [pluginId, slug]);
+
   useEffect(() => {
     const abortController = new AbortController();
     const { signal } = abortController;
 
     const shouldSendRequest = canRead;
     const requestUrl = `/${pluginId}/collection-types/${slug}${params}`;
-
     if (shouldSendRequest && requestUrl.includes(requestUrlRef.current)) {
       fetchData(requestUrl, signal);
+      getAllData()
     }
 
     return () => {
       requestUrlRef.current = slug;
       abortController.abort();
     };
-  }, [canRead, getData, slug, params, getDataSucceeded, fetchData]);
+  }, [canRead, getData, slug, params, getDataSucceeded, fetchData, getAllData]);
 
   const handleClickDelete = id => {
     setIdToDelete(id);
@@ -449,7 +460,7 @@ function ListView({
                     setQuery={setQuery}
                     showLoader={isLoading}
                   />
-                  <Footer count={total} params={query} onChange={setQuery} />
+                  <Footer count={total} params={query} onChange={setQuery} pageData={data} allData={allData} displayedHeaders={displayedHeaders} allAllowedHeaders={allAllowedHeaders} name={label} contentType={contentType} />
                 </div>
               </div>
             </Wrapper>

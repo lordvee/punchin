@@ -8,6 +8,7 @@ const loadFiles = require('../load/load-files');
 const loadConfig = require('../load/load-config-files');
 
 module.exports = async ({ dir, config }) => {
+  //console.log(config);
   const localPlugins = await loadLocalPlugins({ dir, config });
   const plugins = await loadPlugins({
     installedPlugins: config.installedPlugins,

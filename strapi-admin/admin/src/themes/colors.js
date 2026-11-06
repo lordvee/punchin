@@ -26,18 +26,26 @@ const colors = {
   greyAlpha: 'rgba(227, 233, 243, 0.5)',
   lightestBlue: '#e4f0fc',
   lightBlue: '#e6f0fb',
-  mediumBlue: '#007eff',
+  mediumBlue: '#006fe6',
   darkBlue: '#aed4fb',
   pale: '#f7f8f8',
+  // Modern-SaaS-palette redesign (2026-08): secondary/active/border/page
+  // tokens the old palette didn't have named slots for - see colors below
+  // for what each replaces.
+  secondaryText: '#607d94',
+  activeBackground: '#e6f2ff',
+  borderLight: '#d9e4ee',
+  pageBackground: '#f8fafc',
   content: {
     background: '#fafafb',
     'background-alpha': 'rgba(14, 22, 34, 0.02)',
   },
   leftMenu: {
-    'link-hover': '#1c2431',
-    'link-color': '#919bae',
-    'title-color': '#5b626f',
-    'background-header-link': '#007eff',
+    'link-hover': '#00458f',
+    'link-visited': '#03a9f4',
+    'link-color': '#243b53', // was #002b7d
+    'title-color': '#243b53', // was #002b7d
+    'background-header-link': '#006fe6', // was #007eff
   },
   strapi: {
     'gray-light': '#eff3f6',
@@ -45,6 +53,8 @@ const colors = {
     'blue-darker': '#18202e',
     'blue-dark': '#151c2e',
     blue: '#0097f7',
+    'light-blue-transparent': '#f4f8fc', // was #d0edff
+    red: '#E91E63'
   },
 };
 

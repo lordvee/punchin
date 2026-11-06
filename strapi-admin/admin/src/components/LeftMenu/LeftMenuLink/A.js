@@ -8,31 +8,43 @@ const A = styled.a`
   padding-left: 1.6rem;
   min-height: 3.6rem;
   line-height: 1.8rem;
-  border-left: 0.3rem solid transparent;
+  border-left: 3px solid transparent;
   cursor: pointer;
   color: ${props => props.theme.main.colors.leftMenu['link-color']};
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: 0.01rem;
   text-decoration: none;
   -webkit-font-smoothing: antialiased;
 
+  svg {
+    color: ${props => props.theme.main.colors.secondaryText};
+  }
+
   &:hover {
-    color: ${props => props.theme.main.colors.white};
-    background: ${props => props.theme.main.colors.leftMenu['link-hover']};
-    border-left: 0.3rem solid ${props => props.theme.main.colors.strapi.blue};
+    color: ${props => props.theme.main.colors.mediumBlue};
+    background: ${props => props.theme.main.colors.activeBackground};
     text-decoration: none;
+
+    svg {
+      color: ${props => props.theme.main.colors.mediumBlue};
+    }
   }
 
   &:focus {
-    color: ${props => props.theme.main.colors.white};
+    color: ${props => props.theme.main.colors.mediumBlue};
     text-decoration: none;
   }
 
-  &:visited {
-    color: ${props => props.theme.main.colors.leftMenu['link-color']};
-  }
-
   &.linkActive {
-    color: white !important;
-    border-left: 0.3rem solid ${props => props.theme.main.colors.strapi.blue};
+    color: ${props => props.theme.main.colors.mediumBlue} !important;
+    border-left: 3px solid ${props => props.theme.main.colors.mediumBlue};
+    background: ${props => props.theme.main.colors.activeBackground};
+    font-weight: 600;
+
+    svg {
+      color: ${props => props.theme.main.colors.mediumBlue};
+    }
   }
 `;
 

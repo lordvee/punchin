@@ -24,11 +24,13 @@ const Wrapper = styled.div`
       text-align: right;
       cursor: pointer;
       transition: background 0.2s ease-out;
+      background-color: #007eff;
+      color: #fff;
 
       &:hover,
       &:focus,
       &:active {
-        color: #333740;
+        color: #007eff;
         background-color: #fafafb !important;
         z-index: 9;
       }
@@ -62,9 +64,25 @@ const Wrapper = styled.div`
   }
 
   .dropDownContent {
-    z-index: 8;
-    top: -3px !important;
+    /* Was 8 - lower than LeftMenu's sidebar (z-index 10) and even this
+       component's own toggle button (z-index 9 above), so the open dropdown
+       could render underneath either. The earlier fix (3bc5191a) raised the
+       outer NavTopRightWrapper to 15 to outrank the sidebar but missed this
+       nested value. */
+    z-index: 1000;
+    /* Popper.js (v1, via reactstrap 8's react-popper) computes a broken
+       translate3d offset for this toggle - even after disabling its flip
+       modifier and trying positionFixed, it still placed the menu at
+       negative Y (off-screen above the viewport) or off to the right past
+       the viewport edge. Forcing static positioning here overrides Popper's
+       inline transform/position outright: the menu just hangs directly
+       below its toggle button, which is all this fixed, always-in-the-
+       same-spot navbar dropdown ever needs. */
+    position: absolute !important;
+    transform: none !important;
+    top: 100% !important;
     left: auto !important;
+    right: 0 !important;
     min-width: 190px;
     margin: 0 !important;
     padding: 0;

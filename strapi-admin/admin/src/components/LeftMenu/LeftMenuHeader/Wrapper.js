@@ -1,12 +1,15 @@
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-import Logo from '../../../assets/images/logo-strapi.png';
+import Logo from '../../../assets/images/punch-in-logo-inverted.png';
 
 const Wrapper = styled.div`
   background-color: ${(props) =>
     props.theme.main.colors.leftMenu['background-header-link']};
   padding-left: 2rem;
+  width: 24rem;
+  position: fixed;
+  z-index: 20;
   height: ${props => props.theme.main.sizes.leftMenu.height};
 
   .leftMenuHeaderLink {

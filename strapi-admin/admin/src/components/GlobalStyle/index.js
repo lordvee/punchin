@@ -1,21 +1,24 @@
 import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+
   html {
     font-size: 62.5%;
   }
 
   body {
-    font-family: 'Lato';
+    font-family: 'Inter', 'Lato', sans-serif;
     font-size: 1.4rem;
     line-height: 1.5;
-    color: #292b2c;
+    color: #004a99;
+    background-color: #f8fafc;
   }
 
   * {
     -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
-    font-family: 'Lato';
+    font-family: 'Inter', 'Lato', sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
@@ -139,20 +142,20 @@ const GlobalStyle = createGlobalStyle`
   }
 
   ::-webkit-scrollbar-track {
-    background-color: #eee;
+    background-color: transparent;
   }
 
   ::-webkit-scrollbar-track:hover {
-    background-color: #ddd;
+    background-color: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: #ccc;
+    background-color: #c0c4cc;
     border-radius: 0.5rem;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background-color: #bbb;
+    background-color: #a6acb8;
   }
 
   ::-webkit-scrollbar-button {
@@ -162,7 +165,7 @@ const GlobalStyle = createGlobalStyle`
   /* firefox scrollbar */
   /* stylelint-disable */
   * {
-    scrollbar-color: #bbb #eee;
+    scrollbar-color: #c0c4cc transparent;
     scrollbar-width: thin;
   }
   /* stylelint-enable */

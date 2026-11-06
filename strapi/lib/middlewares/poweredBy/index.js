@@ -8,7 +8,7 @@ module.exports = strapi => {
 
         ctx.set(
           'X-Powered-By',
-          strapi.config.get('middleware.settings.poweredBy.value', 'Strapi <strapi.io>')
+          strapi.config.get('middleware.settings.poweredBy.value', 'PunchInEngine')
         );
       });
     },

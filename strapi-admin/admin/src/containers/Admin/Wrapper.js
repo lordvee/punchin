@@ -10,7 +10,14 @@ const Wrapper = styled.div`
   }
 
   .adminPageRightWrapper {
-    width: ${props => `calc(100% - ${props.theme.main.sizes.leftMenu.width})`};
+    position: fixed;
+    left:6rem;
+    top: 6rem;
+    width: calc(100vw - 5rem);
+    overflow-y: auto;
+    height: calc(100vh - 6rem - 1px);
+    z-index: 5;
+
   }
 `;
 

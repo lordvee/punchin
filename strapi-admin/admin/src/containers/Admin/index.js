@@ -10,9 +10,10 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { bindActionCreators, compose } from 'redux';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { isEmpty } from 'lodash';
+import Logo from '../../assets/images/punch-in-logo-inverted.png';
 // Components from strapi-helper-plugin
 import {
   difference,
@@ -261,12 +262,8 @@ export class Admin extends React.Component {
               plugins={plugins}
               setUpdateMenu={this.setUpdateMenu}
             />
-            <NavTopRightWrapper>
-              {/* Injection zone not ready yet */}
-              <Logout />
-            </NavTopRightWrapper>
+
             <div className="adminPageRightWrapper">
-              <Header />
               <Content>
                 <Switch>
                   <Route path="/" render={props => this.renderRoute(props, HomePage)} exact />
@@ -277,11 +274,11 @@ export class Admin extends React.Component {
                       <InstalledPluginsPage />
                     </CheckPagePermissions>
                   </Route>
-                  <Route path="/marketplace">
+                  {/*<Route path="/marketplace">
                     <CheckPagePermissions permissions={adminPermissions.marketplace.main}>
                       <MarketplacePage />
                     </CheckPagePermissions>
-                  </Route>
+                  </Route> */}
                   <Route
                     path={`${SETTINGS_BASE_URL || '/settings'}/:settingId`}
                     component={SettingsPage}
@@ -292,6 +289,13 @@ export class Admin extends React.Component {
                 </Switch>
               </Content>
             </div>
+            <NavTopRightWrapper>
+              {/* Injection zone not ready yet */}
+              <Link to="/">
+                <img src={Logo} width={120} alt="Punch-in logo" style={{paddingLeft: '1.4em'}} />
+              </Link>
+              <Logout />
+            </NavTopRightWrapper>
             <OverlayBlocker
               key="overlayBlocker"
               isOpen={blockApp && showGlobalAppBlocker}
