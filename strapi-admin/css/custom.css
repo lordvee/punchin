@@ -1,9 +1,0 @@
-.zeroheight {
-    overflow:hidden;
-    height:0;
-    transition: height 350ms;
-}
-
-.animatedbox {
-    height:auto;
-}
